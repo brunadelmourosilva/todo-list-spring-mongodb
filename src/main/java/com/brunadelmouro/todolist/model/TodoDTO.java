@@ -8,13 +8,12 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collation = "todos")
+@Document(collection = "todos")
 public class TodoDTO {
 
     @Id
@@ -23,6 +22,6 @@ public class TodoDTO {
     private String todo;
     private String description;
     private Boolean completed;
-    private Date createdAt;
-    private Date updatedAt;
+    private String createdAt;
+    private String updatedAt;
 }
