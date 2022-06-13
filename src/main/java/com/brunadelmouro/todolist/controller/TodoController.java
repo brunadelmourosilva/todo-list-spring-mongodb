@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/todos")
@@ -35,5 +36,17 @@ public class TodoController {
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findTodoById(@PathVariable String id){
+        Optional<TodoDTO> todoDTO = todoRepository.findById(id);
+
+        if(todoDTO.isPresent()){
+            return new ResponseEntity<>(todoDTO.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(String.format("Todo not found with id %s", id), HttpStatus.NOT_FOUND);
+        }
+
     }
 }
