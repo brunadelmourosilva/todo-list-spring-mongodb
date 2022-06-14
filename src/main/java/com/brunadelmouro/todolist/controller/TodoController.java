@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,22 @@ public class TodoController {
         } else {
             return new ResponseEntity<>(String.format("Todo not found with id %s", id), HttpStatus.NOT_FOUND);
         }
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateTodoById(@RequestBody TodoDTO newTodoDTO, @PathVariable String id){
+        Optional<TodoDTO> todoDTO = todoRepository.findById(id);
+
+        if(todoDTO.isPresent()){
+            TodoDTO todoSave = todoDTO.get();
+            todoSave.setCompleted(newTodoDTO.getCompleted() != null ? newTodoDTO.getCompleted() : todoSave.getCompleted());
+            todoSave.setTodo(newTodoDTO.getTodo() != null ? newTodoDTO.getTodo() : todoSave.getTodo());
+            todoSave.setDescription(newTodoDTO.getDescription() != null ? newTodoDTO.getDescription() : todoSave.getDescription());
+            todoSave.setUpdatedAt(String.valueOf(new Date(System.currentTimeMillis())));
+            todoRepository.save(todoSave);
+            return new ResponseEntity<>(todoSave, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(String.format("Todo not found with id %s", id), HttpStatus.NOT_FOUND);
+        }
     }
 }
