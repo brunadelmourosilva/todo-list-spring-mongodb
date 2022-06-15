@@ -26,12 +26,9 @@ public class TodoController {
 
     @GetMapping
     public ResponseEntity<?> findAllTodos(){
-        List<TodoDTO> todoDTOList  = todoRepository.findAll();
+        List<TodoDTO> todoDTOList  = todoService.getAllTodos();
 
-        if(!todoDTOList.isEmpty())
-            return new ResponseEntity<List<TodoDTO>>(todoDTOList, HttpStatus.OK);
-        else
-            return new ResponseEntity<>("No todos avaliable", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(todoDTOList, !todoDTOList.isEmpty() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @PostMapping

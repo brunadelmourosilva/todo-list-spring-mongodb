@@ -6,6 +6,8 @@ import com.brunadelmouro.todolist.repository.TodoRepository;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,5 +28,15 @@ public class TodoServiceImpl implements TodoService{
             todoDTO.setCreatedAt(String.valueOf(System.currentTimeMillis()));
             todoRepository.save(todoDTO);
         }
+    }
+
+    @Override
+    public List<TodoDTO> getAllTodos() {
+        List<TodoDTO> todos = todoRepository.findAll();
+
+        if(!todos.isEmpty())
+            return todos;
+        else
+            return new ArrayList<>();
     }
 }
