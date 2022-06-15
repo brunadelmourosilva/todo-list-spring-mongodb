@@ -6,6 +6,7 @@ import com.brunadelmouro.todolist.repository.TodoRepository;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Optional;
 
 @Service
 public class TodoServiceImpl implements TodoService{
@@ -18,7 +19,8 @@ public class TodoServiceImpl implements TodoService{
 
     @Override
     public void createTodo(TodoDTO todoDTO) throws ConstraintViolationException, TodoCollectionException{
-        if(todoRepository.findByTodo(todoDTO.getTodo()))
+        Optional<TodoDTO> todoVerify = todoRepository.findByTodo(todoDTO.getTodo());
+        if(todoVerify.isPresent())
             throw new TodoCollectionException(TodoCollectionException.TodoAlreadyExists());
         else {
             todoDTO.setCreatedAt(String.valueOf(System.currentTimeMillis()));
