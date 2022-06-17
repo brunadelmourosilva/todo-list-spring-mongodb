@@ -13,8 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +31,7 @@ class TodoServiceImplTest {
     @BeforeEach
     void setUp() {
         nowDate = String.valueOf(System.currentTimeMillis());
-        todoDTO = new TodoDTO(null, "Study algorithms and data structures", "Study COM112", false, nowDate, nowDate);
+        todoDTO = new TodoDTO("62a7c51c541e3655708d6544", "Study algorithms and data structures", "Study COM112", false, nowDate, nowDate);
     }
 
     @Test
@@ -61,6 +60,21 @@ class TodoServiceImplTest {
         assertEquals("Study COM112", response.getDescription());
         assertEquals(false, response.getCompleted());
         assertEquals(nowDate, response.getCreatedAt());
+    }
+
+    @Test
+    void getSingleTodoWhereIdWasNotFound() {
+
+        //given
+        //given(todoRepository.findById(todoDTO.getId())).willReturn(Optional.of(todoDTO));
+
+        //when
+        assertThrows(TodoCollectionException.class, () -> {
+            todoService.getSingleTodo(todoDTO.getId());
+        });
+
+        //then
+        then(todoRepository).should(times(1)).findById(todoDTO.getId());
     }
 
     @Test
