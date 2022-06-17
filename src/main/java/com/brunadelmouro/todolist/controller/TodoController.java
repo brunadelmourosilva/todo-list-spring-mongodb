@@ -45,12 +45,10 @@ public class TodoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findTodoById(@PathVariable String id){
-        Optional<TodoDTO> todoDTO = todoRepository.findById(id);
-
-        if(todoDTO.isPresent()){
-            return new ResponseEntity<>(todoDTO.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(String.format("Todo not found with id %s", id), HttpStatus.NOT_FOUND);
+        try {
+            return new ResponseEntity<>(todoService.getSingleTodo(id), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 

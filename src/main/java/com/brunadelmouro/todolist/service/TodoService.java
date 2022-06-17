@@ -11,4 +11,6 @@ public interface TodoService {
     void createTodo(TodoDTO todoDTO) throws ConstraintViolationException, TodoCollectionException;
 
     List<TodoDTO> getAllTodos();
+
+    TodoDTO getSingleTodo(String id) throws TodoCollectionException;
 }
