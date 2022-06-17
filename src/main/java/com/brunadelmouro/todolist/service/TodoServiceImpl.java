@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,28 @@ public class TodoServiceImpl implements TodoService{
             throw new TodoCollectionException(TodoCollectionException.NotFoundException(id));
         } else {
             return optionalTodoDTO.get();
+        }
+    }
+
+    @Override
+    public void updateTodo(String id, TodoDTO todoDTO) throws TodoCollectionException {
+        Optional<TodoDTO> todoDTOOptional = todoRepository.findById(id);
+        Optional<TodoDTO> todoDTOOptionalSameName = todoRepository.findByTodo(todoDTO.getTodo());
+
+        if(todoDTOOptionalSameName.isPresent() && !todoDTOOptionalSameName.get().equals(id))
+            throw new TodoCollectionException(TodoCollectionException.TodoAlreadyExists());
+
+        if(todoDTOOptional.isPresent()){
+            TodoDTO todoUpdated = todoDTOOptional.get();
+
+            todoUpdated.setTodo(todoDTO.getTodo());
+            todoUpdated.setDescription(todoDTO.getDescription());
+            todoUpdated.setCompleted(todoDTO.getCompleted());
+            todoUpdated.setUpdatedAt(String.valueOf(new Date(System.currentTimeMillis())));
+
+            todoRepository.save(todoUpdated);
+        } else {
+            throw new TodoCollectionException(TodoCollectionException.NotFoundException(id));
         }
     }
 }

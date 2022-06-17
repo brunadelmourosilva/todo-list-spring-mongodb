@@ -13,4 +13,6 @@ public interface TodoService {
     List<TodoDTO> getAllTodos();
 
     TodoDTO getSingleTodo(String id) throws TodoCollectionException;
+
+    void updateTodo(String id, TodoDTO todoDTO) throws TodoCollectionException;
 }
