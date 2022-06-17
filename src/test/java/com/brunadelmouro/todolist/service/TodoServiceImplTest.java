@@ -66,7 +66,7 @@ class TodoServiceImplTest {
     void getSingleTodoWhereIdWasNotFound() {
 
         //given
-        //given(todoRepository.findById(todoDTO.getId())).willReturn(Optional.of(todoDTO));
+        given(todoRepository.findById(todoDTO.getId())).willReturn(Optional.ofNullable(null));
 
         //when
         assertThrows(TodoCollectionException.class, () -> {
