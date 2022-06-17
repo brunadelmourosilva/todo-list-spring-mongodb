@@ -21,13 +21,14 @@ public class TodoServiceImpl implements TodoService{
     }
 
     @Override
-    public void createTodo(TodoDTO todoDTO) throws ConstraintViolationException, TodoCollectionException{
+    public TodoDTO createTodo(TodoDTO todoDTO) throws ConstraintViolationException, TodoCollectionException{
         Optional<TodoDTO> todoVerify = todoRepository.findByTodo(todoDTO.getTodo());
         if(todoVerify.isPresent())
             throw new TodoCollectionException(TodoCollectionException.TodoAlreadyExists());
         else {
             todoDTO.setCreatedAt(String.valueOf(System.currentTimeMillis()));
-            todoRepository.save(todoDTO);
+            todoDTO = todoRepository.save(todoDTO);
+            return todoDTO;
         }
     }
 

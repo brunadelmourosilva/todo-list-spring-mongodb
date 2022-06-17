@@ -9,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,7 @@ import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class TodoServiceImplTest {
 
     @Mock
@@ -43,8 +46,36 @@ class TodoServiceImplTest {
     }
 
     @Test
-    void createTodo() {
+    void createTodo() throws TodoCollectionException {
 
+        //given
+        given(todoRepository.findByTodo(todoDTO1.getTodo())).willReturn(Optional.empty());
+        given(todoRepository.save(todoDTO1)).willReturn(todoDTO1);
+
+        //when
+        TodoDTO response = todoService.createTodo(todoDTO1);
+
+        //then
+        then(todoRepository).should(times(1)).findByTodo(todoDTO1.getTodo());
+        then(todoRepository).should(times(1)).save(todoDTO1);
+
+        assertEquals(todoDTO1.getCreatedAt(), response.getCreatedAt());
+        assertEquals(todoDTO1, response);
+    }
+
+    @Test
+    void createTodoWhenTodoAlreadyExist() {
+
+        //given
+        given(todoRepository.findByTodo(todoDTO1.getTodo())).willReturn(Optional.of(todoDTO1));
+
+        //when
+        assertThrows(TodoCollectionException.class, () -> {
+            todoService.createTodo(todoDTO1);
+        });
+
+        //then
+        then(todoRepository).should(times(1)).findByTodo(todoDTO1.getTodo());
     }
 
     @Test
@@ -65,7 +96,7 @@ class TodoServiceImplTest {
     }
 
     @Test
-    void getSingleTodoWhereIdWasFound() throws TodoCollectionException {
+    void getSingleTodoWhenIdWasFound() throws TodoCollectionException {
         //chamar as funções da camada mais inferior para a mais superior
 
         //given - dado uma condição
@@ -85,7 +116,7 @@ class TodoServiceImplTest {
     }
 
     @Test
-    void getSingleTodoWhereIdWasNotFound() {
+    void getSingleTodoWhenIdWasNotFound() {
 
         //given
         given(todoRepository.findById(todoDTO1.getId())).willReturn(Optional.ofNullable(null));

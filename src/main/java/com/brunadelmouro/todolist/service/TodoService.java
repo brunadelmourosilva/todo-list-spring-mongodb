@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TodoService {
 
-    void createTodo(TodoDTO todoDTO) throws ConstraintViolationException, TodoCollectionException;
+    TodoDTO createTodo(TodoDTO todoDTO) throws ConstraintViolationException, TodoCollectionException;
 
     List<TodoDTO> getAllTodos();
 
