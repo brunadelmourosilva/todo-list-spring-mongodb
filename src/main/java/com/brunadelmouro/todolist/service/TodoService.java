@@ -14,7 +14,7 @@ public interface TodoService {
 
     TodoDTO getSingleTodo(String id) throws TodoCollectionException;
 
-    void updateTodo(String id, TodoDTO todoDTO) throws TodoCollectionException;
+    TodoDTO updateTodo(String id, TodoDTO todoDTO) throws TodoCollectionException;
 
     void deleteTodoById(String id) throws TodoCollectionException;
 }

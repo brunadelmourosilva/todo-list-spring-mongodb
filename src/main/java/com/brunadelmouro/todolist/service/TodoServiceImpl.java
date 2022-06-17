@@ -54,7 +54,7 @@ public class TodoServiceImpl implements TodoService{
     }
 
     @Override
-    public void updateTodo(String id, TodoDTO todoDTO) throws TodoCollectionException {
+    public TodoDTO updateTodo(String id, TodoDTO todoDTO) throws TodoCollectionException {
         Optional<TodoDTO> todoDTOOptional = todoRepository.findById(id);
         Optional<TodoDTO> todoDTOOptionalSameName = todoRepository.findByTodo(todoDTO.getTodo());
 
@@ -69,7 +69,8 @@ public class TodoServiceImpl implements TodoService{
             todoUpdated.setCompleted(todoDTO.getCompleted());
             todoUpdated.setUpdatedAt(String.valueOf(new Date(System.currentTimeMillis())));
 
-            todoRepository.save(todoUpdated);
+            todoDTO = todoRepository.save(todoUpdated);
+            return todoDTO;
         } else {
             throw new TodoCollectionException(TodoCollectionException.NotFoundException(id));
         }

@@ -119,7 +119,7 @@ class TodoServiceImplTest {
     void getSingleTodoWhenIdWasNotFound() {
 
         //given
-        given(todoRepository.findById(todoDTO1.getId())).willReturn(Optional.ofNullable(null));
+        given(todoRepository.findById(todoDTO1.getId())).willReturn(Optional.empty());
 
         //when
         assertThrows(TodoCollectionException.class, () -> {
@@ -131,10 +131,88 @@ class TodoServiceImplTest {
     }
 
     @Test
-    void updateTodo() {
+    void updateTodo() throws TodoCollectionException {
+
+        //given
+        given(todoRepository.findById(todoDTO1.getId())).willReturn(Optional.of(todoDTO1));
+        given(todoRepository.findByTodo(todoDTO1.getTodo())).willReturn(Optional.empty()); //cenário onde o objeto a ser atualizado não é o mesmo(id)
+        given(todoRepository.save(todoDTO1)).willReturn(todoDTO1);
+
+        //when
+        TodoDTO response = todoService.updateTodo(todoDTO1.getId(), todoDTO1);
+
+        //then
+        then(todoRepository).should(times(1)).findById(todoDTO1.getId());
+        then(todoRepository).should(times(1)).findByTodo(todoDTO1.getTodo());
+        then(todoRepository).should(times(1)).save(todoDTO1);
+
+        assertEquals(todoDTO1, response);
     }
 
     @Test
+    void updateTodoWhenIdWasNotFound() {
+
+        //given
+        given(todoRepository.findById(todoDTO1.getId())).willReturn(Optional.empty()); //cenário onde o id não foi encontrado
+        given(todoRepository.findByTodo(todoDTO1.getTodo())).willReturn(Optional.empty());
+
+        //when
+        assertThrows(TodoCollectionException.class, () -> {
+            todoService.updateTodo(todoDTO1.getId(), todoDTO1);
+        });
+
+        //then
+        then(todoRepository).should(times(1)).findById(todoDTO1.getId());
+        then(todoRepository).should(times(1)).findByTodo(todoDTO1.getTodo());
+        then(todoRepository).should(times(0)).save(todoDTO1);
+    }
+
+    @Test
+    void updateTodoWhenTodoHaveTheSameTodoName() {
+
+        //given
+        given(todoRepository.findById(todoDTO1.getId())).willReturn(Optional.of(todoDTO1));
+        given(todoRepository.findByTodo(todoDTO1.getTodo())).willReturn(Optional.of(todoDTO1)); //cenário onde meu objeto FOI encontrado mas não tem o mesmo nome
+
+        //when
+        assertThrows(TodoCollectionException.class, () -> {
+            todoService.updateTodo(todoDTO1.getId(), todoDTO1);
+        });
+
+        //then
+        then(todoRepository).should(times(1)).findById(todoDTO1.getId());
+        then(todoRepository).should(times(1)).findByTodo(todoDTO1.getTodo());
+        then(todoRepository).should(times(0)).save(todoDTO1);
+    }
+
+    //https://stacktraceguru.com/unittest/mock-void-method
+    @Test
     void deleteTodoById() {
+
+        //given
+        given(todoRepository.findById(todoDTO1.getId())).willReturn(Optional.of(todoDTO1));
+
+        //when
+        assertDoesNotThrow(() -> todoService.deleteTodoById(todoDTO1.getId()));
+
+        //then
+        then(todoRepository).should(times(1)).findById(todoDTO1.getId());
+        then(todoRepository).should(times(1)).deleteById(todoDTO1.getId());
+    }
+
+    @Test
+    public void deleteTodoByIdWhenIdWasNotFound() {
+
+        //given
+        given(todoRepository.findById(todoDTO1.getId())).willReturn(Optional.empty());
+
+        //when
+        assertThrows(TodoCollectionException.class, () -> {
+            todoService.deleteTodoById(todoDTO1.getId());
+        });
+
+        //then
+        then(todoRepository).should(times(1)).findById(todoDTO1.getId());
+        then(todoRepository).should(times(0)).deleteById(todoDTO1.getId());
     }
 }
