@@ -4,6 +4,7 @@ import com.brunadelmouro.todolist.exception.TodoCollectionException;
 import com.brunadelmouro.todolist.model.TodoDTO;
 import com.brunadelmouro.todolist.repository.TodoRepository;
 import com.brunadelmouro.todolist.service.TodoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/todos")
 public class TodoController {
-
-    @Autowired
-    private TodoRepository todoRepository;
 
     @Autowired
     private TodoService todoService;
