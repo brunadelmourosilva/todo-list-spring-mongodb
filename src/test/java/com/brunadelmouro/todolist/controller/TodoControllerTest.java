@@ -138,7 +138,17 @@ class TodoControllerTest {
     }
 
     @Test
-    void updateTodoById() {
+    void updateTodoByIdWithSuccess() throws Exception {
+        //given
+        given(todoService.updateTodo(todoDTO1.getId(), todoDTO1)).willReturn(todoDTO1);
+
+        //when - then
+        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/12345"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+
+                .andExpect(status().isOk());
     }
 
     @Test
