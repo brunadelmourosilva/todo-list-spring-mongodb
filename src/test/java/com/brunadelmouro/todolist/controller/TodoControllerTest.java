@@ -2,6 +2,7 @@ package com.brunadelmouro.todolist.controller;
 
 import com.brunadelmouro.todolist.exception.TodoCollectionException;
 import com.brunadelmouro.todolist.model.TodoDTO;
+import com.brunadelmouro.todolist.repository.TodoRepository;
 import com.brunadelmouro.todolist.service.TodoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -41,6 +43,9 @@ class TodoControllerTest {
 
     @MockBean
     TodoService todoService;
+
+    @MockBean
+    TodoRepository todoRepository;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -94,6 +99,21 @@ class TodoControllerTest {
                 .content(objectMapper.writeValueAsString(todoDTO1)))
 
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void saveTodoInvalid() throws Exception {
+        //given
+        given(todoRepository.findByTodo(todoDTO1.getTodo())).willReturn(Optional.of(todoDTO1));
+        given(todoService.createTodo(any(TodoDTO.class))).willThrow(TodoCollectionException.class);
+
+        //when-then
+        mockMvc.perform(MockMvcRequestBuilders.post(TODO_API)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(todoDTO1)))
+
+                .andExpect(status().isConflict());
     }
 
     @Test
