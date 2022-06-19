@@ -137,33 +137,35 @@ class TodoControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-//    @Test
-//    void updateTodoByIdWithSuccess() throws Exception {
-//        //given
-//        given(todoService.updateTodo(todoDTO1.getId(), todoDTO1)).willReturn(todoDTO1);
-//
-//        //when - then
-//        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/12345"))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
-//
-//                .andExpect(status().isOk());
-//    }
+    //CORRIGIR
+    @Test
+    void updateTodoByIdWithSuccess() throws Exception {
+        //given
+        given(todoService.updateTodo("12345", todoDTO1)).willReturn(todoDTO1);
 
-//    @Test
-//    void updateTodoByIdWhenIdWasNotFound() throws Exception {
-//        //given
-//        given(todoService.updateTodo("454545", any(TodoDTO.class))).willThrow(TodoCollectionException.class);
-//
-//        //when - then
-//        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/454545"))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
-//
-//                .andExpect(status().isNotFound());
-//    }
+        //when - then
+        mockMvc.perform(MockMvcRequestBuilders.put(TODO_API.concat("/12345"))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+
+                .andExpect(status().isOk());
+    }
+
+    //CORRIGIR
+    @Test
+    void updateTodoByIdWhenIdWasNotFound() throws Exception {
+        //given
+        given(todoService.updateTodo("454545", any(TodoDTO.class))).willThrow(TodoCollectionException.class);
+
+        //when - then
+        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/454545"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     void deleteTodoByIdWithSuccess() throws Exception {
