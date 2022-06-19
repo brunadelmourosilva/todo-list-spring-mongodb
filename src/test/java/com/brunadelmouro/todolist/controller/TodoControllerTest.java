@@ -20,9 +20,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({TodoController.class})
@@ -36,43 +39,46 @@ class TodoControllerTest {
 
     @MockBean
     TodoService todoService;
-//
-//    @Autowired
-//    ObjectMapper objectMapper;
 
-//    String nowDate;
-//    TodoDTO todoDTO1;
-//    TodoDTO todoDTO2;
-//    List<TodoDTO> todoDTOList;
+    @Autowired
+    ObjectMapper objectMapper;
 
-//    @BeforeEach
-//    void setUp() {
-//        nowDate = String.valueOf(System.currentTimeMillis());
-//
-//        todoDTO1 = new TodoDTO("12345", "Study RabbitMQ", "Study this tech today", true, nowDate, nowDate);
-//        todoDTO2 = new TodoDTO("54321", "Study REST Assured", "Study this tech today", false, nowDate, nowDate);
-//
-//        todoDTOList = List.of(todoDTO1, todoDTO2);
-//    }
+    String nowDate;
+    TodoDTO todoDTO1;
+    TodoDTO todoDTO2;
+    List<TodoDTO> todoDTOList;
 
-//    @AfterEach
-//    void tearDown() {
-//        reset(todoService);
-//    }
-//
-//    @Test
-//    void findAllTodos() throws Exception {
-//        //given
-//        given(todoService.getAllTodos()).willReturn(todoDTOList);
-//
-//        //when - then
-//        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .contentType(objectMapper.writeValueAsString(todoDTOList)))
-//
-//                .andExpect(status().isOk());
-//    }
+    @BeforeEach
+    void setUp() {
+        nowDate = String.valueOf(System.currentTimeMillis());
+
+        todoDTO1 = new TodoDTO("12345", "Study RabbitMQ", "Study this tech today", true, nowDate, nowDate);
+        todoDTO2 = new TodoDTO("54321", "Study REST Assured", "Study this tech today", false, nowDate, nowDate);
+
+        todoDTOList = List.of(todoDTO1, todoDTO2);
+    }
+
+    @AfterEach
+    void tearDown() {
+        reset(todoService);
+    }
+
+    @Test
+    void findAllTodos() throws Exception {
+        //given
+        given(todoService.getAllTodos()).willReturn(todoDTOList);
+
+        //when - then
+        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(objectMapper.writeValueAsString(todoDTOList)))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$.[0].todo", is("Study RabbitMQ")))
+                .andExpect(jsonPath("$.[0].todo", is("Study REST Assured")));
+    }
 
     @Test
     void saveTodo() {
