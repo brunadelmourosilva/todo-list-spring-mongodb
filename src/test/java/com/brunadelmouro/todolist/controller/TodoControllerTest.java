@@ -4,19 +4,15 @@ import com.brunadelmouro.todolist.exception.TodoCollectionException;
 import com.brunadelmouro.todolist.model.TodoDTO;
 import com.brunadelmouro.todolist.repository.TodoRepository;
 import com.brunadelmouro.todolist.service.TodoService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -25,7 +21,6 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -44,9 +39,6 @@ class TodoControllerTest {
 
     @MockBean
     TodoService todoService;
-
-    @MockBean
-    TodoRepository todoRepository;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -105,7 +97,6 @@ class TodoControllerTest {
     @Test
     void saveTodoInvalid() throws Exception {
         //given
-        given(todoRepository.findByTodo(todoDTO1.getTodo())).willReturn(Optional.of(todoDTO1));
         given(todoService.createTodo(any(TodoDTO.class))).willThrow(TodoCollectionException.class);
 
         //when-then
@@ -130,6 +121,20 @@ class TodoControllerTest {
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.todo", is("Study RabbitMQ")));
+    }
+
+    @Test
+    void findTodoByIdWhenIdWasNotFound() throws Exception {
+        //given
+        given(todoService.getSingleTodo(anyString())).willThrow(TodoCollectionException.class);
+
+        //when - then
+        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/454545"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+
+                .andExpect(status().isNotFound());
     }
 
     @Test
