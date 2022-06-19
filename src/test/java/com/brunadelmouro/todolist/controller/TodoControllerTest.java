@@ -1,5 +1,6 @@
 package com.brunadelmouro.todolist.controller;
 
+import com.brunadelmouro.todolist.exception.TodoCollectionException;
 import com.brunadelmouro.todolist.model.TodoDTO;
 import com.brunadelmouro.todolist.service.TodoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +24,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -70,9 +72,9 @@ class TodoControllerTest {
 
         //when - then
         mockMvc.perform(MockMvcRequestBuilders.get(TODO_API)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(objectMapper.writeValueAsString(todoDTOList)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -81,7 +83,17 @@ class TodoControllerTest {
     }
 
     @Test
-    void saveTodo() {
+    void saveTodoWithSuccess() throws Exception {
+        //given
+        given(todoService.createTodo(any(TodoDTO.class))).willReturn(todoDTO1);
+
+        //when-then
+        mockMvc.perform(MockMvcRequestBuilders.post(TODO_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(todoDTO1)))
+
+                .andExpect(status().isOk());
     }
 
     @Test
