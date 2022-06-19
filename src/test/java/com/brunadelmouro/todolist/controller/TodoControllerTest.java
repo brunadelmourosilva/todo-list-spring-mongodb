@@ -137,21 +137,43 @@ class TodoControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+//    @Test
+//    void updateTodoByIdWithSuccess() throws Exception {
+//        //given
+//        given(todoService.updateTodo(todoDTO1.getId(), todoDTO1)).willReturn(todoDTO1);
+//
+//        //when - then
+//        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/12345"))
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+//
+//                .andExpect(status().isOk());
+//    }
+
+//    @Test
+//    void updateTodoByIdWhenIdWasNotFound() throws Exception {
+//        //given
+//        given(todoService.updateTodo("454545", any(TodoDTO.class))).willThrow(TodoCollectionException.class);
+//
+//        //when - then
+//        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/454545"))
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+//
+//                .andExpect(status().isNotFound());
+//    }
+
     @Test
-    void updateTodoByIdWithSuccess() throws Exception {
+    void deleteTodoByIdWithSuccess() throws Exception {
         //given
-        given(todoService.updateTodo(todoDTO1.getId(), todoDTO1)).willReturn(todoDTO1);
+        given(todoService.getSingleTodo(anyString())).willReturn(todoDTO1);
 
         //when - then
-        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/12345"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+        mockMvc.perform(MockMvcRequestBuilders.delete(TODO_API.concat("/12345"))
+                        .accept(MediaType.APPLICATION_JSON))
 
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteTodoById() {
     }
 }
