@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -25,15 +26,16 @@ import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({TodoController.class})
+@AutoConfigureDataMongo
 class TodoControllerTest {
-//
-//    static final String TODO_API = "/todos";
-//
-//    @Autowired
-//    MockMvc mockMvc;
-//
-//    @MockBean
-//    TodoService todoService;
+
+    static final String TODO_API = "/todos";
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockBean
+    TodoService todoService;
 //
 //    @Autowired
 //    ObjectMapper objectMapper;
