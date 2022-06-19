@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -84,7 +85,7 @@ class TodoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[0].todo", is("Study RabbitMQ")))
-                .andExpect(jsonPath("$.[0].todo", is("Study REST Assured")));
+                .andExpect(jsonPath("$.[1].todo", is("Study REST Assured")));
     }
 
     @Test
@@ -117,7 +118,18 @@ class TodoControllerTest {
     }
 
     @Test
-    void findTodoById() {
+    void findTodoByIdWithSuccess() throws Exception {
+        //given
+        given(todoService.getSingleTodo(anyString())).willReturn(todoDTO1);
+
+        //when - then
+        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/12345"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.todo", is("Study RabbitMQ")));
     }
 
     @Test
