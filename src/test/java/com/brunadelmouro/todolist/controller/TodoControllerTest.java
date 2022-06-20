@@ -2,9 +2,9 @@ package com.brunadelmouro.todolist.controller;
 
 import com.brunadelmouro.todolist.exception.TodoCollectionException;
 import com.brunadelmouro.todolist.model.TodoDTO;
-import com.brunadelmouro.todolist.repository.TodoRepository;
 import com.brunadelmouro.todolist.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,22 +17,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest({TodoController.class})
 @AutoConfigureDataMongo
 class TodoControllerTest {
 
-    static final String TODO_API = "/todos";
+    static final String TODO_API = "/todos/";
 
     @Autowired
     MockMvc mockMvc;
@@ -72,7 +69,7 @@ class TodoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get(TODO_API)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+                        .content(objectMapper.writeValueAsString(todoDTOList)))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -114,10 +111,10 @@ class TodoControllerTest {
         given(todoService.getSingleTodo(anyString())).willReturn(todoDTO1);
 
         //when - then
-        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/12345"))
+        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("12345"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+                        .content(objectMapper.writeValueAsString(todoDTOList)))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.todo", is("Study RabbitMQ")));
@@ -129,10 +126,10 @@ class TodoControllerTest {
         given(todoService.getSingleTodo(anyString())).willThrow(TodoCollectionException.class);
 
         //when - then
-        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/454545"))
+        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("454545"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+                        .content(objectMapper.writeValueAsString(todoDTOList)))
 
                 .andExpect(status().isNotFound());
     }
@@ -141,13 +138,13 @@ class TodoControllerTest {
     @Test
     void updateTodoByIdWithSuccess() throws Exception {
         //given
-        given(todoService.updateTodo("12345", todoDTO1)).willReturn(todoDTO1);
+        given(todoService.updateTodo(todoDTO1.getId(), todoDTO1)).willReturn(todoDTO1);
 
         //when - then
-        mockMvc.perform(MockMvcRequestBuilders.put(TODO_API.concat("/12345"))
-                        .accept(MediaType.APPLICATION_JSON)
+        mockMvc.perform(MockMvcRequestBuilders.put(TODO_API.concat(todoDTO1.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(todoDTO1)))
 
                 .andExpect(status().isOk());
     }
@@ -156,13 +153,13 @@ class TodoControllerTest {
     @Test
     void updateTodoByIdWhenIdWasNotFound() throws Exception {
         //given
-        given(todoService.updateTodo("454545", any(TodoDTO.class))).willThrow(TodoCollectionException.class);
+        given(todoService.updateTodo(eq("00000"), any(TodoDTO.class))).willThrow(TodoCollectionException.class);
 
         //when - then
-        mockMvc.perform(MockMvcRequestBuilders.get(TODO_API.concat("/454545"))
+        mockMvc.perform(MockMvcRequestBuilders.put(TODO_API.concat("00000"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .contentType(objectMapper.writeValueAsString(todoDTOList)))
+                        .content(objectMapper.writeValueAsString(todoDTO1)))
 
                 .andExpect(status().isNotFound());
     }
